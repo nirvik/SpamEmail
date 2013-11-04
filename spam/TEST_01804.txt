@@ -1,0 +1,4 @@
+Re: DVD/CD Read IssuesFrom nobody Tue Nov  5 01:33:28 2013
+Content-Type: text/plain; charset=ISO-8859-1
+
+Okay so I need to upgrade my kernel?
