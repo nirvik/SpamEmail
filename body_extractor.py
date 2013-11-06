@@ -19,31 +19,27 @@ for i in os.listdir('./new/'):
 	
 	except AttributeError:
 		flag = 0
-		for check in msg.get_payload(): #For all the mails that are base64 encoded
+		for check in msg.get_payload(): #For all the mails that are base64 encoded ignore them
+			q = check['Content-Type']
 			if check['Content-Transfer-Encoding']=='base64':
-				print 'base64 :',i
+				#print 'base64 :',i
 				flag = 1
 				break
 		if flag ==1 :
 			continue
 
-		counter+=1
-		print i,':',counter
 
 		text = ' '
 		for ex in msg.get_payload():
 			try:
 				text = text+ex.get_payload()
-				print ex,'ERROR'
 				
 			except TypeError:
-				#for more in ex:	
-					#if TypeError:
-					#	break
-					#print more.get_payload()
+				counter+=1
+				print i,':',counter #check how many emails cannot be read	
 				continue
 			
-		
+		text = text.lower()	
 	try:
 		tokens = reg.findall(text)
 	
