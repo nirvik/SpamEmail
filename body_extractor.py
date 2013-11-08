@@ -6,13 +6,19 @@ import email
 import re
 from BeautifulSoup import BeautifulSoup
 import json
+import sys
 
 p = email.Parser.Parser()
 word_count = {}
 reg = re.compile('[a-z]+',re.IGNORECASE)
 counter = 0 
-for i in os.listdir('./new/'):
-	fp = open('./new/'+i,'rb')
+directory = sys.argv[1]
+
+path ='./'+directory+'/'
+print path
+
+for i in os.listdir(path):
+	fp = open(path+i,'rb')
 	msg = p.parse(fp)
 	fp.close()
 	text = msg.get_payload() #get the pay_load
@@ -23,7 +29,7 @@ for i in os.listdir('./new/'):
 		for check in msg.get_payload(): #For all the mails that are base64 encoded ignore them
 			q = check['Content-Type']
 			if check['Content-Transfer-Encoding']=='base64':
-				#print 'base64 :',i
+				print 'base64 :',i
 				flag = 1
 				break
 		if flag ==1 :
@@ -55,10 +61,20 @@ for i in os.listdir('./new/'):
 		else:
 			word_count[words]+=1 # counting their occurences
 
-for i in enumerate(word_count.iteritems()):
-		print i
+#for i,j in word_count.iteritems():
+#	if j>50:
+#		print i,j
 
-with open('spam_dict.txt','w') as outfile:
-	json.dump(word_count,outfile)
+if directory=='spam':
+	with open('spam_dict.txt','w') as outfile:
+		json.dump(word_count,outfile)
+	
+elif directory == 'easy_ham':
+	with open('ham_dict.txt','w') as outfile:
+		json.dump(word_count,outfile)
+
+elif directory == 'spam_2':
+	with open('more_spam_dict.txt','w') as outfile:
+		json.dump(word_count,outfile)
 #Bug : throw all the extra HTML tags
 # convert all the words to lowercase
