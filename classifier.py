@@ -11,9 +11,16 @@ import sys
 import email
 from BeautifulSoup import BeautifulSoup
 import re
+import operator  #sorting dict accoring to the spamicity
+
+
+def fun(x):
+	return 1.0-x
 
 def main():
 	
+	spamicity= {}
+
 	f = open(sys.argv[1])
 	msg = parser.parse(f)
 	f.close()
@@ -50,6 +57,29 @@ def main():
 	except TypeError:
 		print 'SomeThing got messed up during regex'
 		print ' Terminating .... '
+		sys.exit(0)
+	
+	
+	for words in tokens:
+
+		if word not in ham_prob and word not in spam_prob:
+			spamicity[word]=0.4
+
+		spamicity[word] = spam_prob[word]/(spam_prob[word]+ham_prob[word])
+
+	
+	print 'Done tokenzing and determing the spamicity of tokens'
+
+	best_tokens = sorted(spamicity.iteritems(),keys = itemgetter(1), reverse=True)
+	best = best_tokens[:15] #taking the top 15 spamicity words 
+	not_best = map(fun,best) #gettin a list of [1-x1,1-x2,1-x3,...]
+	
+	num = reduce(lambda x, y:x*y,best)
+	den = reduce(lambda x, y:x*y,best) + reduce(lambda x, y:x*y,not_best)
+
+	result = num/den
+
+	print 'The ans is result {0}.'.format(result)
 
 
 if __name__=='__main__':
