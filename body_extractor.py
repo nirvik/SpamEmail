@@ -4,6 +4,7 @@ import mailbox
 import os
 import email
 import re
+from BeautifulSoup import BeautifulSoup
 
 p = email.Parser.Parser()
 word_count = {}
@@ -16,7 +17,6 @@ for i in os.listdir('./new/'):
 	text = msg.get_payload() #get the pay_load
 	try:
 		text = text.lower()
-	
 	except AttributeError:
 		flag = 0
 		for check in msg.get_payload(): #For all the mails that are base64 encoded ignore them
@@ -41,8 +41,9 @@ for i in os.listdir('./new/'):
 			
 		text = text.lower()	
 	try:
-		tokens = reg.findall(text)
-	
+		tokens = ' '.join(BeautifulSoup(text).text.split())
+		tokens = reg.findall(tokens)
+		
 	except TypeError:
 		print 'Some shit happened in finding the regex'
 		continue
@@ -53,9 +54,8 @@ for i in os.listdir('./new/'):
 		else:
 			word_count[words]+=1 # counting their occurences
 
-for i,j in word_count.iteritems():
-	if j>50:
-		print i,':',j
+for i in enumerate(word_count.iteritems()):
+		print i
 
 #Bug : throw all the extra HTML tags
 # convert all the words to lowercase
