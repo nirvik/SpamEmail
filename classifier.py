@@ -74,16 +74,17 @@ def main():
 		if words not in ham and combined_spam[words]<=5:
 			spamicity[words]=0.4
 			continue
-		
-		if ham[words]<=5 and combined_spam[words]<=5:
-			spamicity[words] = 0.4
-			continue
+		if words in ham and words in combined_spam:
+			if ham[words]<=5 and combined_spam[words]<=5:
+				spamicity[words]= 0.4
+				continue
 		
 		if words not in spam_prob:
 			spam_prob[words]=0.0
 
 		if words not in ham_prob:
 			ham_prob[words]=0.0
+		
 
 		spamicity[words] = spam_prob[words]/(spam_prob[words]+ham_prob[words])
 	
