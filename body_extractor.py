@@ -5,6 +5,7 @@ import os
 import email
 import re
 from BeautifulSoup import BeautifulSoup
+import json
 
 p = email.Parser.Parser()
 word_count = {}
@@ -57,5 +58,7 @@ for i in os.listdir('./new/'):
 for i in enumerate(word_count.iteritems()):
 		print i
 
+with open('spam_dict.txt','w') as outfile:
+	json.dump(word_count,outfile)
 #Bug : throw all the extra HTML tags
 # convert all the words to lowercase
