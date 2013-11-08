@@ -32,8 +32,8 @@ Spam_Token = {}  #stores the contribution of each token to any spam email
 
 for tokens,value in data.iteritems():
 	prob = value/1780.0 #tested with 502 emails
-	if prob>1.0:
-		prob = 1.0
+	if prob>=1.0:
+		prob = 0.999
 
 	Spam_Token[tokens]=prob
 
@@ -42,4 +42,5 @@ for i,j in Spam_Token.iteritems():
 	if j>0.2:	
 		print i,':',j
 
-
+with open('spam_token_contribution.db','w') as outfile:
+	json.dump(Spam_Token,outfile)

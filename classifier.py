@@ -50,9 +50,9 @@ def main():
 	try:
 		tokens = ' '.join(BeautifulSoup(text).text.split())
 		
-		temp_special = ' '.join(reg2.findall(tokens)) #extracting special characters 
-		special_char = temp_special.split()
-		tokens = reg.findall(tokens) + special_char 
+	#	temp_special = ' '.join(reg2.findall(tokens)) #extracting special characters 
+	#	special_char = temp_special.split()
+		tokens = reg.findall(tokens) #+ special_char 
 	
 	except TypeError:
 		print 'SomeThing got messed up during regex'
@@ -61,25 +61,57 @@ def main():
 	
 	
 	for words in tokens:
+		
+		
+		if words not in ham_prob and words not in spam_prob:
+			spamicity[words]=0.4
+			continue
 
-		if word not in ham_prob and word not in spam_prob:
-			spamicity[word]=0.4
+		if words not in combined_spam and ham[words]<=5:
+			spamicity[words]=0.4
+			continue
 
-		spamicity[word] = spam_prob[word]/(spam_prob[word]+ham_prob[word])
+		if words not in ham and combined_spam[words]<=5:
+			spamicity[words]=0.4
+			continue
+		
+		if ham[words]<=5 and combined_spam[words]<=5:
+			spamicity[words] = 0.4
+			continue
+		
+		if words not in spam_prob:
+			spam_prob[words]=0.0
 
+		if words not in ham_prob:
+			ham_prob[words]=0.0
+
+		spamicity[words] = spam_prob[words]/(spam_prob[words]+ham_prob[words])
+	
+	for i,j in spamicity.iteritems():
+		print i,':',j
 	
 	print 'Done tokenzing and determing the spamicity of tokens'
-
-	best_tokens = sorted(spamicity.iteritems(),keys = itemgetter(1), reverse=True)
-	best = best_tokens[:15] #taking the top 15 spamicity words 
-	not_best = map(fun,best) #gettin a list of [1-x1,1-x2,1-x3,...]
 	
-	num = reduce(lambda x, y:x*y,best)
-	den = reduce(lambda x, y:x*y,best) + reduce(lambda x, y:x*y,not_best)
+	best_tokens = []
+	for i in spamicity.itervalues():
+		best_tokens.append(i)
 
+	best_tokens = sorted(best_tokens,reverse = True)[:-10] #taking the top 15 spamicity words 
+
+	not_best = map(fun,best_tokens) #gettin a list of [1-x1,1-x2,1-x3,...]
+	print ' Best ' + str(best_tokens)	
+	print 'Not Best ' + str(not_best)
+
+
+	num = reduce(lambda x, y:x*y,best_tokens)
+	den = reduce(lambda x, y:x*y,best_tokens) + reduce(lambda x,y:x*y,not_best)
 	result = num/den
+	if result>0.5:
+		print 'Its a Spam'
+	else:
+		print 'its a Ham'
 
-	print 'The ans is result {0}.'.format(result)
+	print 'The ans is result of {0}/{1} = {2}'.format(num,den,result)
 
 
 if __name__=='__main__':
@@ -95,6 +127,16 @@ if __name__=='__main__':
 	ham_prob = json.load(json_data)
 	json_data.close()
 
+	json_data = open('ham_dict.txt')
+	ham = json.load(json_data)
+	json_data.close()
+	json_data = open('more_spam_dict.txt')
+	spam2 = json.load(json_data)
+	json_data.close()
+	json_data = open('spam_dict.txt')
+	spam = json.load(json_data)
+	json_data.close()
+
+	combined_spam = dict(spam.items() + spam2.items())
+
 	main()
-
-

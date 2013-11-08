@@ -50,9 +50,9 @@ for i in os.listdir(path):
 		text = text.lower()	
 	try:
 		tokens = ' '.join(BeautifulSoup(text).text.split())
-		temp_special = ' '.join(reg2.findall(tokens))
-		special_char = temp_special.split()
-		tokens = reg.findall(tokens) + special_char
+#		temp_special = ' '.join(reg2.findall(tokens))
+#		special_char = temp_special.split()
+		tokens = reg.findall(tokens)# + special_char
 		
 	except TypeError:
 		print 'Some shit happened in finding the regex'
